@@ -1,6 +1,9 @@
 import Foundation
 import Combine
 import SwiftSoup
+
+#if canImport(ErrorKit)
+
 import ErrorKit
 
 public final class SDSMealAPIProvider {
@@ -81,3 +84,5 @@ public final class SDSMealAPIProvider {
         return (categories, response)
     }
 }
+
+#endif
