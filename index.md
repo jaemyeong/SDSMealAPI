@@ -4,8 +4,8 @@ SDSMealAPI 스위프트 패키지 입니다.
 
 ## Requirements
 
-- macOS 12.5.1
-- Xcode 13.4.1
+- macOS 12.6
+- Xcode 14.0.1
 - iOS 13.0
 
 ## Installation
@@ -13,7 +13,7 @@ SDSMealAPI 스위프트 패키지 입니다.
 ### Swift Package Manager
 
 ```swift
-.package(url: "https://github.com/jaemyeong/SDSMealAPI.git", .upToNextMajor(from: "0.1.0"))
+.package(url: "https://github.com/jaemyeong/SDSMealAPI.git", .upToNextMajor(from: "0.1.1"))
 ```
 
 ## Usage
