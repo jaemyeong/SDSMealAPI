@@ -1,4 +1,7 @@
 import Foundation
+
+#if canImport(ErrorKit)
+
 import ErrorKit
 
 /// 식사 타입.
@@ -110,3 +113,5 @@ extension Meal: Equatable {}
 extension Meal: Hashable {}
 
 extension Meal: Codable {}
+
+#endif
