@@ -2,21 +2,25 @@
 
 SDSMealAPI 스위프트 패키지 입니다.
 
-## Requirements
+## Overview
+
+삼성 SDS 식단 조회 API.
+
+### Requirements
 
 - macOS 12.6
 - Xcode 14.0.1
-- iOS 13.0
+- Swift 5.7
 
-## Installation
+### Installation
 
-### Swift Package Manager
+#### Swift Package Manager
 
 ```swift
-.package(url: "https://github.com/jaemyeong/SDSMealAPI.git", .upToNextMajor(from: "0.1.1"))
+.package(url: "https://github.com/jaemyeong/SDSMealAPI.git", .upToNextMajor(from: "0.1.2"))
 ```
 
-## Usage
+### Usage
 
 ```swift
 import SDSMealAPI
@@ -26,14 +30,14 @@ let provider = SDSMealAPIProvider()
 let value = await provider.fetch()
 ```
 
-## Documentation
+### Documentation
 
 - [SDSMealAPI](https://sds-meal-api.jaemyeong.com/docs/documentation/sdsmealapi/)
 
-## License
+### License
 
 - [MIT](LICENSE)
 
-## Author
+### Author
 
 [Jaemyeong Jin](https://github.com/jaemyeong) ([jaemyeong@me.com](mailto:jaemyeong@me.com))
