@@ -10,14 +10,14 @@
 
 - macOS 12.6
 - Xcode 14.0.1
-- Swift 5.7
+- iOS 13.0
 
 ### Installation
 
 #### Swift Package Manager
 
 ```swift
-.package(url: "https://github.com/jaemyeong/SDSMealAPI.git", .upToNextMajor(from: "0.1.3"))
+.package(url: "https://github.com/jaemyeong/SDSMealAPI.git", .upToNextMajor(from: "0.1.4"))
 ```
 
 ### Usage
