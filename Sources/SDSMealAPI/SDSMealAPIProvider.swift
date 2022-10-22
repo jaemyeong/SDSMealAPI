@@ -17,7 +17,7 @@ public final class SDSMealAPIProvider {
         self.baseURL = baseURL
     }
     
-    public func fetch(meal: Meal = .current, stubValue: (Data, URLResponse)? = nil) async throws -> ([Category], HTTPURLResponse) {
+    public func fetch(meal: Meal, stubValue: (Data, URLResponse)? = nil) async throws -> ([Category], HTTPURLResponse) {
         guard let baseURL = self.baseURL else {
             throw NilError()
         }
