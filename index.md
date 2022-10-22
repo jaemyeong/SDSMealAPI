@@ -17,7 +17,7 @@ SDSMealAPI 스위프트 패키지 입니다.
 #### Swift Package Manager
 
 ```swift
-.package(url: "https://github.com/jaemyeong/SDSMealAPI.git", .upToNextMajor(from: "0.1.4"))
+.package(url: "https://github.com/jaemyeong/SDSMealAPI.git", .upToNextMajor(from: "0.1.5"))
 ```
 
 ### Usage
@@ -27,7 +27,7 @@ import SDSMealAPI
 
 let provider = SDSMealAPIProvider()
 
-let value = await provider.fetch()
+let value = await provider.fetch(meal: .breakfast)
 ```
 
 ### Documentation
