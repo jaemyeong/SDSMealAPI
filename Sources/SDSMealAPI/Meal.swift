@@ -4,6 +4,9 @@ import ErrorKit
 /// 식사.
 public enum Meal: String {
     
+    /// 현재
+    case current
+    
     /// 아침.
     case breakfast
     
