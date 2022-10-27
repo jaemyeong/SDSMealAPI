@@ -16,7 +16,7 @@
 <link rel="stylesheet"
 	href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
 <link rel="stylesheet"
-	href="/foodcourt/resources/css/foodcourt_new.css;jsessionid=5820859BA1A0F0993A714F5A63368463">
+	href="/foodcourt/resources/css/foodcourt_new.css">
 
 <script
 	src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
@@ -30,6 +30,7 @@
     $(document).ready(function() {
       var jbOffset = $('.mo-ui-link').offset();
       $(window).scroll(function() {
+		  closeDlgTime();
         if ($(document).scrollTop() > jbOffset.top + 45) {
           $('body').addClass('fixed');
         } else {
@@ -39,7 +40,7 @@
     });
   
   
-	var currentTime = 'dinner';
+	var currentTime = 'night';
 	var zoneId = 'W2';
 
 	function goMainZone(o) {
@@ -50,10 +51,10 @@
 		window.localStorage.setItem("food_search_zoneId", zoneId);
 
 		if (menuTime) {
-			location.href = "/foodcourt/menuplanner/list;jsessionid=5820859BA1A0F0993A714F5A63368463?zoneId="
+			location.href = "/foodcourt/menuplanner/list?zoneId="
 					+ zoneId + "&menuTime=" + menuTime;
 		} else {
-			location.href = "/foodcourt/menuplanner/list;jsessionid=5820859BA1A0F0993A714F5A63368463?zoneId="
+			location.href = "/foodcourt/menuplanner/list?zoneId="
 					+ zoneId;
 		}
 	}
@@ -74,7 +75,7 @@
 
 		if (cnt == 5) {
 			$.ajax({
-				url : "/foodcourt/sync;jsessionid=5820859BA1A0F0993A714F5A63368463",
+				url : "/foodcourt/sync",
 				async : false,
 				type : 'GET',
 				success : function() {
@@ -106,6 +107,7 @@
 		}, false)
 
 		touchsurface.addEventListener('touchmove', function(e) {
+			closeDlgTime();
 			//e.preventDefault() // prevent scrolling when inside DIV
 		}, false)
 
@@ -144,16 +146,23 @@
 			} else if (currentTime == 'dinner') {
 				if (swipedir == 'right') {
 					goPage(zoneId, 'lunch');
+				} else if (swipedir == 'left' && false) {
+					goPage(zoneId, 'night');
+				}
+			} else if (currentTime == 'night') {
+				if (swipedir == 'right') {
+					goPage(zoneId, 'dinner');
 				}
 			}
 		})
 		
 		$(".mo-btn-top").off("click").on("click",function(e) {
-			document.scrollingElement.scrollTop = 0
+			document.scrollingElement.scrollTop = 0;
 	    });
 
 	    $(".mo-btn-top").hide();
 	    $( window ).scroll(function() {
+			closeDlgTime();
 	        if( document.scrollingElement.scrollTop == 0 ) {
 	            $(".mo-btn-top").hide();
 	        } else {
@@ -172,7 +181,7 @@
 
 	<!-- Header -->
 	<header class="mo-layout-header">
-      <div class="mo-header-top">
+      <div class="mo-header-top" onclick="closeDlgTime()">
         <button class="btn-back mo-home">이전</button>
         <!-- ios에서 mo-home 부분에 show class 추가 -->
         <h1 onclick="sync();">식단조회</h1>
@@ -211,13 +220,6 @@
                         
                         
                             <option value="PK">판교 물류 Campus</option>
-                        
-                    
-                
-                    
-                        
-                        
-                            <option value="W1">우면1</option>
                         
                     
                 
@@ -280,20 +282,6 @@
                     
                         
                         
-                            <option value="SWSEC08">전자-투게더</option>
-                        
-                    
-                
-                    
-                        
-                        
-                            <option value="SWSEC09">전자-패밀리</option>
-                        
-                    
-                
-                    
-                        
-                        
                             <option value="SWSEC10">전자-폴라리스</option>
                         
                     
@@ -319,6 +307,20 @@
                         
                     
                 
+                    
+                        
+                        
+                            <option value="BL01">바이오로직스</option>
+                        
+                    
+                
+                    
+                        
+                        
+                            <option value="BL02">바이오로직스2식당</option>
+                        
+                    
+                
             </select>
         </div>
       </div>
@@ -330,9 +332,11 @@
 			
 			
 			
+			
 				<li onclick="goPage('W2','breakfast');">아침</li>
 				<li onclick="goPage('W2','lunch');">점심</li>
-				<li class="mo-select">저녁</li>
+				<li onclick="goPage('W2','dinner');">저녁</li>
+				
 			
 		
 	  </ul>
@@ -342,25 +346,111 @@
 
 
 
-
-	
+<style>
+	.mo-contents #dlg-time {
+		display: none;
+		width: 200px;
+		background-color: #000022;
+		color: #fff;
+		text-align: left;
+		padding: 12px 12px;
+		border-radius: 6px;
+		position: absolute;
+		z-index: 1;
+		right: -8px;
+		top: 30px;
+		font-weight: bold;
+	}
+	.time-cover {
+		position: relative;
+		width: 100%;
+		display: flex;
+		justify-content: flex-end;
+	}
+	.mo-contents #dlg-time:before {
+		content: '';
+		display: block;
+		position: absolute;
+		left: 155px;
+		bottom: 100%;
+		width: 0;
+		height: 0;
+		border: 10px solid transparent;
+		border-bottom-color: #000022;
+	}
+	#dlg-time a {
+		color: white !important;
+	}
+</style>
 <script language="javascript">
+	var notClose = 0;
+	$(function(){
+		$("#exampleModal01").on('show.bs.modal', function(event) {
+			var img = $(event.relatedTarget);
+			var src = img.data('whatever');
+			if (src == '') {
+				var src = "../resources/images/menu_img_default.png";
+			}
 
-$(function(){
-	$("#exampleModal01").on('show.bs.modal', function(event) {
-		var img = $(event.relatedTarget);
-		var src = img.data('whatever');
-		if (src == '') {
-			var src = "../resources/images/menu_img_default.png";
-		} 
-		
-		var modal = $(this);
-		modal.find('.modal-body #menuImg').attr("src",src);
-	});	
-});	
-	
+			var modal = $(this);
+			modal.find('.modal-body #menuImg').attr("src",src);
+		});
+	});
+
+	function operatingTime() {
+		var currentDlgTime= document.getElementById("dlg-time").style.display;
+		if(currentDlgTime === "block") {
+			closeDlgTime(null);
+			return;
+		}
+		var content = null;
+		if(false) {
+			if(false) {
+				content = "<table><tr><td>일반식</td><td><a href=\"javascript:void(0)\">07:00 ~ 08:20</a></td></tr><tr><td>Takeout</td><td><a href=\"javascript:void(0)\">06:30 ~ 08:30</a></td></tr></table>";
+			} else if(false) {
+				content = "<table><tr><td>일반식</td><td><a href=\"javascript:void(0)\">11:30 ~ 13:40</a></td></tr><tr><td>Takeout</td><td><a href=\"javascript:void(0)\">11:20 ~ 13:20</a></td></tr></table>";
+			} else if(false) {
+				content = "<table><tr><td>일반식</td><td><a href=\"javascript:void(0)\">17:30 ~ 19:00</a></td></tr><tr><td>Takeout</td><td><a href=\"javascript:void(0)\">19:20 ~ 20:00</a></td></tr></table>";
+			} else if(true) {
+				content = "<table><tr><td>일반식</td><td><a href=\"javascript:void(0)\"> ~ </a></td></tr><tr><td>Takeout</td><td>미운영</td></tr></table>";
+			}
+		} else if(false){
+			if(false) {
+				content = "<table><tr><td>일반식</td><td>미운영</td></tr><tr><td>Takeout</td><td><a href=\"javascript:void(0)\">06:30 ~ 08:30</a></td></tr></table>";
+			} else if(false) {
+				content = "<table><tr><td>일반식</td><td><a href=\"javascript:void(0)\">11:30 ~ 13:40</a></td></tr><tr><td>Takeout</td><td><a href=\"javascript:void(0)\">11:20 ~ 13:20</a></td></tr></table>";
+			}
+		} else {
+			if(false) {
+				content = "<table><tr><td>일반식</td><td><a href=\"javascript:void(0)\">07:00 ~ 08:20</a></td></tr></table>";
+			} else if(false) {
+				content = "<table><tr><td>일반식</td><td><a href=\"javascript:void(0)\">11:30 ~ 13:40</a></td></tr></table>";
+			} else if(false) {
+				content = "<table><tr><td>일반식</td><td><a href=\"javascript:void(0)\">17:30 ~ 19:00</a></td></tr></table>";
+			}
+		}
+		if(content != null) {
+			document.getElementById("dlg-time").innerHTML = content;
+			document.getElementById("dlg-time").style.display = "block";
+		}
+	}
+	function closeDlgTime(id) {
+		if(id != "over-time" && id != "dlg-time" && this.notClose === 0 && false) {
+			document.getElementById("dlg-time").innerHTML = "";
+			document.getElementById("dlg-time").style.display = "none";
+		}
+		this.notClose = 0;
+	}
+	$(document).ready( function() {
+		if(false) {
+			operatingTime();
+		}
+	});
+
+	function notCloseDlgTime() {
+		this.notClose = 1;
+	}
 </script>
-
 
 	
 	
@@ -382,16 +472,15 @@ $(function(){
 					
 				
 					
-				
-					
 						
-							<p class="info-cont-time">아침 07:00 ~ 09:20</p>
+							<a class="info-cont-time" href="javascript:void(0)">아침 07:00 ~ 08:20</a>
 						
 						
-							<p class="info-cont-time">점심 11:30 ~ 13:00</p>
+							<a class="info-cont-time" href="javascript:void(0)">점심 11:30 ~ 13:40</a>
 						
 						
-							<p class="info-cont-time">저녁 17:30 ~ 19:00</p>
+							<a class="info-cont-time" href="javascript:void(0)">저녁 17:30 ~ 19:00</a>
+						
 						
 					
 				
@@ -424,7 +513,7 @@ $(function(){
 			</div>
 		</div>
 		<!-- //운영안함 메세지 -->
-		
+	
 
 
  </section>
