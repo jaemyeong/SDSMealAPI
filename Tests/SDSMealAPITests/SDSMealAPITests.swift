@@ -28,7 +28,7 @@ public final class SDSMealAPITests: XCTestCase {
     public func testBreakfast() async throws {
         let provider = try XCTUnwrap(self.provider)
         
-        let value: ([SDSMealAPI.Category], HTTPURLResponse)
+        let value: (Meal, [SDSMealAPI.Category], HTTPURLResponse)
         
         if self.isStubbing {
             let stubDataURL = try XCTUnwrap(Bundle.module.url(forResource: "breakfast", withExtension: "html"))
@@ -44,8 +44,9 @@ public final class SDSMealAPITests: XCTestCase {
             value = try await provider.fetch(meal: .breakfast)
         }
         
-        let (categories, response) = value
+        let (meal, categories, response) = value
         
+        XCTAssertEqual(meal, .breakfast)
         XCTAssertFalse(categories.isEmpty)
         XCTAssertEqual(response.statusCode, 200)
     }
@@ -53,7 +54,7 @@ public final class SDSMealAPITests: XCTestCase {
     public func testLunch() async throws {
         let provider = try XCTUnwrap(self.provider)
         
-        let value: ([SDSMealAPI.Category], HTTPURLResponse)
+        let value: (Meal, [SDSMealAPI.Category], HTTPURLResponse)
         
         if self.isStubbing {
             let stubDataURL = try XCTUnwrap(Bundle.module.url(forResource: "lunch", withExtension: "html"))
@@ -69,8 +70,9 @@ public final class SDSMealAPITests: XCTestCase {
             value = try await provider.fetch(meal: .lunch)
         }
         
-        let (categories, response) = value
+        let (meal, categories, response) = value
         
+        XCTAssertEqual(meal, .lunch)
         XCTAssertFalse(categories.isEmpty)
         XCTAssertEqual(response.statusCode, 200)
     }
@@ -78,7 +80,7 @@ public final class SDSMealAPITests: XCTestCase {
     public func testDinner() async throws {
         let provider = try XCTUnwrap(self.provider)
         
-        let value: ([SDSMealAPI.Category], HTTPURLResponse)
+        let value: (Meal, [SDSMealAPI.Category], HTTPURLResponse)
         
         if self.isStubbing {
             let stubDataURL = try XCTUnwrap(Bundle.module.url(forResource: "dinner", withExtension: "html"))
@@ -94,8 +96,9 @@ public final class SDSMealAPITests: XCTestCase {
             value = try await provider.fetch(meal: .dinner)
         }
         
-        let (categories, response) = value
+        let (meal, categories, response) = value
         
+        XCTAssertEqual(meal, .dinner)
         XCTAssertFalse(categories.isEmpty)
         XCTAssertEqual(response.statusCode, 200)
     }
@@ -103,7 +106,7 @@ public final class SDSMealAPITests: XCTestCase {
     public func testNight() async throws {
         let provider = try XCTUnwrap(self.provider)
         
-        var value: ([SDSMealAPI.Category], HTTPURLResponse)?
+        var value: (Meal, [SDSMealAPI.Category], HTTPURLResponse)?
         
         if self.isStubbing {
             let stubDataURL = try XCTUnwrap(Bundle.module.url(forResource: "night", withExtension: "html"))
@@ -133,7 +136,7 @@ public final class SDSMealAPITests: XCTestCase {
     public func testCurrent() async throws {
         let provider = try XCTUnwrap(self.provider)
         
-        let value: ([SDSMealAPI.Category], HTTPURLResponse)
+        let value: (Meal, [SDSMealAPI.Category], HTTPURLResponse)
         
         if self.isStubbing {
             let stubDataURL = try XCTUnwrap(Bundle.module.url(forResource: "current", withExtension: "html"))
@@ -149,8 +152,9 @@ public final class SDSMealAPITests: XCTestCase {
             value = try await provider.fetch()
         }
         
-        let (categories, response) = value
+        let (meal, categories, response) = value
         
+        XCTAssertEqual(meal, .lunch)
         XCTAssertFalse(categories.isEmpty)
         XCTAssertEqual(response.statusCode, 200)
     }

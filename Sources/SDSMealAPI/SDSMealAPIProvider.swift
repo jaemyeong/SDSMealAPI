@@ -17,16 +17,21 @@ public final class SDSMealAPIProvider {
         self.baseURL = baseURL
     }
     
-    public func fetch(meal: Meal = .current, stubValue: (Data, URLResponse)? = nil) async throws -> ([Category], HTTPURLResponse) {
+    public func fetch(meal: Meal = .current, stubValue: (Data, URLResponse)? = nil) async throws -> (Meal, [Category], HTTPURLResponse) {
         guard let baseURL = self.baseURL else {
             throw NilError()
         }
         
-        var components = URLComponents()
-        components.queryItems = [
+        var queryItems: [URLQueryItem] = [
             URLQueryItem(name: "zoneId", value: self.zoneID),
-            URLQueryItem(name: "menuTime", value: meal.rawValue),
         ]
+        
+        if meal != .current {
+            queryItems.append(URLQueryItem(name: "menuTime", value: meal.rawValue))
+        }
+        
+        var components = URLComponents()
+        components.queryItems = queryItems
         components.path = "/foodcourt/menuplanner/list"
         
         guard let url = components.url(relativeTo: baseURL) else {
@@ -70,6 +75,8 @@ public final class SDSMealAPIProvider {
             throw InstantiateError()
         }
         
+        let meal = try self.parseMeal(body)
+        
         let document = try SwiftSoup.parse(body)
         
         if let close = try document.select(".corner-no-operation").first().map(Close.init(element:)) {
@@ -78,6 +85,29 @@ public final class SDSMealAPIProvider {
         
         let categories = try document.select(".mo-contents .corner").map(Category.init(element:))
         
-        return (categories, response)
+        return (meal, categories, response)
+    }
+}
+
+extension SDSMealAPIProvider {
+    
+    private func parseMeal(_ body: String) throws -> Meal {
+        let scanner = Scanner(string: body)
+        
+        while !scanner.isAtEnd {
+            guard scanner.scanString("currentTime = '") != nil else {
+                scanner.currentIndex = scanner.string.index(after: scanner.currentIndex)
+                continue
+            }
+            guard let rawValue = scanner.scanUpToString("'") else {
+                throw NotFoundError()
+            }
+            guard let value = Meal(rawValue: rawValue) else {
+                throw NilError()
+            }
+            return value
+        }
+        
+        throw NotFoundError()
     }
 }
