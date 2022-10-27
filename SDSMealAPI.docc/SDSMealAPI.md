@@ -8,7 +8,7 @@
 
 ### Requirements
 
-- macOS 12.6
+- macOS Ventura 13.0
 - Xcode 14.0.1
 - iOS 13.0
 
@@ -17,7 +17,7 @@
 #### Swift Package Manager
 
 ```swift
-.package(url: "https://github.com/jaemyeong/SDSMealAPI.git", .upToNextMajor(from: "0.1.5"))
+.package(url: "https://github.com/jaemyeong/SDSMealAPI.git", .upToNextMajor(from: "0.1.6"))
 ```
 
 ### Usage
@@ -27,7 +27,7 @@ import SDSMealAPI
 
 let provider = SDSMealAPIProvider()
 
-let value = await provider.fetch(meal: .breakfast)
+let value = await provider.fetch()
 ```
 
 ### Documentation

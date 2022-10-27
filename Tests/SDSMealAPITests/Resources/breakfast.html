@@ -1,0 +1,1358 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>delacourt</title>
+
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewPort"
+	content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+ 
+<link rel="stylesheet"
+	href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+<link rel="stylesheet"
+	href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+<link rel="stylesheet"
+	href="/foodcourt/resources/css/foodcourt_new.css">
+
+<script
+	src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script
+	src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+<script language="javascript">
+  
+  //그림자 이동
+  
+    $(document).ready(function() {
+      var jbOffset = $('.mo-ui-link').offset();
+      $(window).scroll(function() {
+		  closeDlgTime();
+        if ($(document).scrollTop() > jbOffset.top + 45) {
+          $('body').addClass('fixed');
+        } else {
+          $('body').removeClass('fixed');
+        }
+      });
+    });
+  
+  
+	var currentTime = 'breakfast';
+	var zoneId = 'W2';
+
+	function goMainZone(o) {
+		goPage(o.value);
+	}
+
+	function goPage(zoneId, menuTime) {
+		window.localStorage.setItem("food_search_zoneId", zoneId);
+
+		if (menuTime) {
+			location.href = "/foodcourt/menuplanner/list?zoneId="
+					+ zoneId + "&menuTime=" + menuTime;
+		} else {
+			location.href = "/foodcourt/menuplanner/list?zoneId="
+					+ zoneId;
+		}
+	}
+
+	function goFloor(num) {
+		if (num == '1') {
+			$("body").scrollTop(0);
+		} else {
+			var offset = $("#E5E6").offset();
+			$("body").scrollTop(offset.top - 62);
+		}
+	}
+
+	var cnt = 0;
+
+	function sync() {
+		cnt++;
+
+		if (cnt == 5) {
+			$.ajax({
+				url : "/foodcourt/sync",
+				async : false,
+				type : 'GET',
+				success : function() {
+					location.reload();
+				},
+				error : function() {
+					location.reload();
+				}
+			});
+		}
+	}
+
+	function swipedetect(el, callback) {
+
+		var touchsurface = el, swipedir, startX, startY, distX, distY, threshold = 150, //required min distance traveled to be considered swipe
+		restraint = 100, // maximum distance allowed at the same time in perpendicular direction
+		allowedTime = 300, // maximum time allowed to travel that distance
+		elapsedTime, startTime, handleswipe = callback || function(swipedir) {
+		}
+
+		touchsurface.addEventListener('touchstart', function(e) {
+			var touchobj = e.changedTouches[0]
+			swipedir = 'none'
+			dist = 0
+			startX = touchobj.pageX
+			startY = touchobj.pageY
+			startTime = new Date().getTime() // record time when finger first makes contact with surface
+			//e.preventDefault()
+		}, false)
+
+		touchsurface.addEventListener('touchmove', function(e) {
+			closeDlgTime();
+			//e.preventDefault() // prevent scrolling when inside DIV
+		}, false)
+
+		touchsurface.addEventListener('touchend', function(e) {
+			var touchobj = e.changedTouches[0]
+			distX = touchobj.pageX - startX // get horizontal dist traveled by finger while in contact with surface
+			distY = touchobj.pageY - startY // get vertical dist traveled by finger while in contact with surface
+			elapsedTime = new Date().getTime() - startTime // get time elapsed
+			if (elapsedTime <= allowedTime) { // first condition for awipe met
+				if (Math.abs(distX) >= threshold
+						&& Math.abs(distY) <= restraint) { // 2nd condition for horizontal swipe met
+					swipedir = (distX < 0) ? 'left' : 'right' // if dist traveled is negative, it indicates left swipe
+				} else if (Math.abs(distY) >= threshold
+						&& Math.abs(distX) <= restraint) { // 2nd condition for vertical swipe met
+					swipedir = (distY < 0) ? 'up' : 'down' // if dist traveled is negative, it indicates up swipe
+				}
+			}
+			handleswipe(swipedir)
+			//e.preventDefault()
+		}, false)
+	}
+
+	window.addEventListener('load', function() {
+
+		swipedetect($(".mo-layout-content")[0], function(swipedir) {
+			if (currentTime == 'breakfast') {
+				if (swipedir == 'left') {
+					goPage(zoneId, 'lunch');
+				}
+			} else if (currentTime == 'lunch') {
+				if (swipedir == 'left') {
+					goPage(zoneId, 'dinner');
+				} else if (swipedir == 'right') {
+					goPage(zoneId, 'breakfast');
+				}
+			} else if (currentTime == 'dinner') {
+				if (swipedir == 'right') {
+					goPage(zoneId, 'lunch');
+				} else if (swipedir == 'left' && false) {
+					goPage(zoneId, 'night');
+				}
+			} else if (currentTime == 'night') {
+				if (swipedir == 'right') {
+					goPage(zoneId, 'dinner');
+				}
+			}
+		})
+		
+		$(".mo-btn-top").off("click").on("click",function(e) {
+			document.scrollingElement.scrollTop = 0;
+	    });
+
+	    $(".mo-btn-top").hide();
+	    $( window ).scroll(function() {
+			closeDlgTime();
+	        if( document.scrollingElement.scrollTop == 0 ) {
+	            $(".mo-btn-top").hide();
+	        } else {
+	            if (!$(".mo-btn-top").is(":visible")) {
+	                $(".mo-btn-top").hide().stop( true, true ).fadeIn(1000).show();
+	            }
+	        }
+	    });
+
+	}, false) // end window.onload
+</script>
+
+</head>
+
+<body>
+
+	<!-- Header -->
+	<header class="mo-layout-header">
+      <div class="mo-header-top" onclick="closeDlgTime()">
+        <button class="btn-back mo-home">이전</button>
+        <!-- ios에서 mo-home 부분에 show class 추가 -->
+        <h1 onclick="sync();">식단조회</h1>
+        <div class="mo-form-select">
+            <select class="combo" onchange="goMainZone(this)">
+                
+                    
+                        
+                        
+                            <option value="AS">잠실</option>
+                        
+                    
+                
+                    
+                        
+                        
+                            <option value="SA">상암</option>
+                        
+                    
+                
+                    
+                        
+                        
+                            <option value="SW">수원</option>
+                        
+                    
+                
+                    
+                        
+                        
+                            <option value="GM">구미</option>
+                        
+                    
+                
+                    
+                        
+                        
+                            <option value="PK">판교 물류 Campus</option>
+                        
+                    
+                
+                    
+                        
+                            <option value="W2" selected="selected">우면2</option>
+                        
+                        
+                    
+                
+                    
+                        
+                        
+                            <option value="SWSEC01">전자-R4 레인보우</option>
+                        
+                    
+                
+                    
+                        
+                        
+                            <option value="SWSEC02">전자-R4 밀키웨이</option>
+                        
+                    
+                
+                    
+                        
+                        
+                            <option value="SWSEC03">전자-R4 오아시스</option>
+                        
+                    
+                
+                    
+                        
+                        
+                            <option value="SWSEC04">전자-R5 5층</option>
+                        
+                    
+                
+                    
+                        
+                        
+                            <option value="SWSEC05">전자-R5 B1층</option>
+                        
+                    
+                
+                    
+                        
+                        
+                            <option value="SWSEC06">전자-R5 B2층</option>
+                        
+                    
+                
+                    
+                        
+                        
+                            <option value="SWSEC07">전자-스마트</option>
+                        
+                    
+                
+                    
+                        
+                        
+                            <option value="SWSEC10">전자-폴라리스</option>
+                        
+                    
+                
+                    
+                        
+                        
+                            <option value="SWSEC11">전자-R3 하모니</option>
+                        
+                    
+                
+                    
+                        
+                        
+                            <option value="SWSEC12">전자-R3 쿠디</option>
+                        
+                    
+                
+                    
+                        
+                        
+                            <option value="FT">미래기술캠퍼스</option>
+                        
+                    
+                
+                    
+                        
+                        
+                            <option value="BL01">바이오로직스</option>
+                        
+                    
+                
+                    
+                        
+                        
+                            <option value="BL02">바이오로직스2식당</option>
+                        
+                    
+                
+            </select>
+        </div>
+      </div>
+	</header>
+	<!-- Content Wrap -->
+	<section class="mo-layout-content">
+      <ul class="mo-ui-link">
+		
+			
+				<li class="mo-select">아침</li>
+				<li onclick="goPage('W2','lunch');">점심</li>
+				<li onclick="goPage('W2','dinner');">저녁</li>
+				
+			
+			
+			
+			
+		
+	  </ul>
+      
+      
+
+
+
+
+<style>
+	.mo-contents #dlg-time {
+		display: none;
+		width: 200px;
+		background-color: #000022;
+		color: #fff;
+		text-align: left;
+		padding: 12px 12px;
+		border-radius: 6px;
+		position: absolute;
+		z-index: 1;
+		right: -8px;
+		top: 30px;
+		font-weight: bold;
+	}
+	.time-cover {
+		position: relative;
+		width: 100%;
+		display: flex;
+		justify-content: flex-end;
+	}
+	.mo-contents #dlg-time:before {
+		content: '';
+		display: block;
+		position: absolute;
+		left: 155px;
+		bottom: 100%;
+		width: 0;
+		height: 0;
+		border: 10px solid transparent;
+		border-bottom-color: #000022;
+	}
+	#dlg-time a {
+		color: white !important;
+	}
+</style>
+<script language="javascript">
+	var notClose = 0;
+	$(function(){
+		$("#exampleModal01").on('show.bs.modal', function(event) {
+			var img = $(event.relatedTarget);
+			var src = img.data('whatever');
+			if (src == '') {
+				var src = "../resources/images/menu_img_default.png";
+			}
+
+			var modal = $(this);
+			modal.find('.modal-body #menuImg').attr("src",src);
+		});
+	});
+
+	function operatingTime() {
+		var currentDlgTime= document.getElementById("dlg-time").style.display;
+		if(currentDlgTime === "block") {
+			closeDlgTime(null);
+			return;
+		}
+		var content = null;
+		if(false) {
+			if(true) {
+				content = "<table><tr><td>일반식</td><td><a href=\"javascript:void(0)\">07:00 ~ 08:20</a></td></tr><tr><td>Takeout</td><td><a href=\"javascript:void(0)\">06:30 ~ 08:30</a></td></tr></table>";
+			} else if(false) {
+				content = "<table><tr><td>일반식</td><td><a href=\"javascript:void(0)\">11:30 ~ 13:40</a></td></tr><tr><td>Takeout</td><td><a href=\"javascript:void(0)\">11:20 ~ 13:20</a></td></tr></table>";
+			} else if(false) {
+				content = "<table><tr><td>일반식</td><td><a href=\"javascript:void(0)\">17:30 ~ 19:00</a></td></tr><tr><td>Takeout</td><td><a href=\"javascript:void(0)\">19:20 ~ 20:00</a></td></tr></table>";
+			} else if(false) {
+				content = "<table><tr><td>일반식</td><td><a href=\"javascript:void(0)\"> ~ </a></td></tr><tr><td>Takeout</td><td>미운영</td></tr></table>";
+			}
+		} else if(false){
+			if(true) {
+				content = "<table><tr><td>일반식</td><td>미운영</td></tr><tr><td>Takeout</td><td><a href=\"javascript:void(0)\">06:30 ~ 08:30</a></td></tr></table>";
+			} else if(false) {
+				content = "<table><tr><td>일반식</td><td><a href=\"javascript:void(0)\">11:30 ~ 13:40</a></td></tr><tr><td>Takeout</td><td><a href=\"javascript:void(0)\">11:20 ~ 13:20</a></td></tr></table>";
+			}
+		} else {
+			if(true) {
+				content = "<table><tr><td>일반식</td><td><a href=\"javascript:void(0)\">07:00 ~ 08:20</a></td></tr></table>";
+			} else if(false) {
+				content = "<table><tr><td>일반식</td><td><a href=\"javascript:void(0)\">11:30 ~ 13:40</a></td></tr></table>";
+			} else if(false) {
+				content = "<table><tr><td>일반식</td><td><a href=\"javascript:void(0)\">17:30 ~ 19:00</a></td></tr></table>";
+			}
+		}
+		if(content != null) {
+			document.getElementById("dlg-time").innerHTML = content;
+			document.getElementById("dlg-time").style.display = "block";
+		}
+	}
+	function closeDlgTime(id) {
+		if(id != "over-time" && id != "dlg-time" && this.notClose === 0 && true) {
+			document.getElementById("dlg-time").innerHTML = "";
+			document.getElementById("dlg-time").style.display = "none";
+		}
+		this.notClose = 0;
+	}
+	$(document).ready( function() {
+		if(true) {
+			operatingTime();
+		}
+	});
+
+	function notCloseDlgTime() {
+		this.notClose = 1;
+	}
+</script>
+
+	
+		<div id="generality" class="mo-contents" onclick="closeDlgTime(event.target.id)">
+			<div class="operating-time">
+				<div class="time-cover">
+					<a id="over-time" onclick="operatingTime()" href="javascript:void(0)">운영시간</a>
+					<div id="dlg-time"onclick="notCloseDlgTime()"></div>
+				</div>
+			</div>
+			
+				<div class="corner" id="E5J2">
+					
+						
+						
+							<div class="num-floor tie">
+								<img src="../resources/images/ic_tie.png">
+							</div>
+						
+					
+					<div class="corner-title">
+						
+							
+							
+								
+								<img src="../resources/images/hall/E5J2.png">
+							
+						
+					</div>
+					
+						
+					
+						
+					
+						
+							<dl class="menu">
+								<dt class="menu-title">쇠고기미역국</dt>
+								<dd class="menu-detail">
+									
+										<span>흑미밥, 동태전, 마늘종볶음, 치커리사과생채, 계란찜</span>
+									
+									
+										<span class="menu-calorie">849 kcal</span>
+									
+								</dd>
+							</dl>
+
+							<a herf="#">
+								<div class="menu-img" data-toggle="modal" data-target="#exampleModal01" data-whatever="http://samsungwelstory.com/data/manager/recipe/E5J2/20221027/s20221027064647.png">
+									
+										
+										
+											
+												
+												
+													<img src="http://samsungwelstory.com/data/manager/recipe/E5J2/20221027/s20221027064647.png" onerror="this.style.display='none';" />
+													<i class="ic-zoom"></i>
+												
+											
+										
+									
+								</div>
+							</a>
+
+							<div class="modal fade" id="exampleModal01" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-hidden="true">
+								<div class="modal-dialog">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h5 class="hidden">이미지 확대</h5>
+											<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+												<span aria-hidden="true">×</span>
+											</button>
+										</div>
+										<div class="modal-body">
+											<img id="menuImg" src = ""/>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						
+					
+						
+							<dl class="menu">
+								<dt class="menu-title">새우죽</dt>
+								<dd class="menu-detail">
+									
+										<span>돼지고기장조림, 낙지젓무침, 포기김치, 동치미, 단품과일</span>
+									
+									
+										<span class="menu-calorie">780 kcal</span>
+									
+								</dd>
+							</dl>
+
+							<a herf="#">
+								<div class="menu-img" data-toggle="modal" data-target="#exampleModal01" data-whatever="http://samsungwelstory.com/data/manager/recipe/E5J2/20221027/s20221027064839.png">
+									
+										
+										
+											
+												
+												
+													<img src="http://samsungwelstory.com/data/manager/recipe/E5J2/20221027/s20221027064839.png" onerror="this.style.display='none';" />
+													<i class="ic-zoom"></i>
+												
+											
+										
+									
+								</div>
+							</a>
+
+							<div class="modal fade" id="exampleModal01" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-hidden="true">
+								<div class="modal-dialog">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h5 class="hidden">이미지 확대</h5>
+											<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+												<span aria-hidden="true">×</span>
+											</button>
+										</div>
+										<div class="modal-body">
+											<img id="menuImg" src = ""/>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						
+					
+						
+					
+						
+					
+						
+					
+						
+					
+						
+					
+						
+					
+						
+					
+						
+					
+						
+					
+						
+					
+						
+					
+						
+					
+				</div>
+			
+				<div class="corner" id="E5J3">
+					
+						
+						
+							<div class="num-floor tie">
+								<img src="../resources/images/ic_tie.png">
+							</div>
+						
+					
+					<div class="corner-title">
+						
+							
+							
+								
+								<img src="../resources/images/hall/E5J3.png">
+							
+						
+					</div>
+					
+						
+							<dl class="menu">
+								<dt class="menu-title">아메리칸브렉퍼스트</dt>
+								<dd class="menu-detail">
+									
+										<span>감귤주스, 알로에주스, 원두커피, 흰우유, 시리얼, 토핑요거트, 휠터치소시지, 멕시칸샐러드, 그린샐러드*드레싱, 파인애플, 호두호밀식빵, 옥수수식빵, 바닐라크림크라운, 새우죽</span>
+									
+									
+										<span class="menu-calorie">1399 kcal</span>
+									
+								</dd>
+							</dl>
+
+							<a herf="#">
+								<div class="menu-img" data-toggle="modal" data-target="#exampleModal01" data-whatever="http://samsungwelstory.com/data/manager/recipe/E5J3/20221027/s20221027065157.png">
+									
+										
+										
+											
+												
+												
+													<img src="http://samsungwelstory.com/data/manager/recipe/E5J3/20221027/s20221027065157.png" onerror="this.style.display='none';" />
+													<i class="ic-zoom"></i>
+												
+											
+										
+									
+								</div>
+							</a>
+
+							<div class="modal fade" id="exampleModal01" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-hidden="true">
+								<div class="modal-dialog">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h5 class="hidden">이미지 확대</h5>
+											<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+												<span aria-hidden="true">×</span>
+											</button>
+										</div>
+										<div class="modal-body">
+											<img id="menuImg" src = ""/>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						
+					
+						
+					
+						
+					
+						
+					
+						
+					
+						
+					
+						
+					
+						
+					
+						
+					
+						
+					
+						
+					
+						
+					
+						
+					
+						
+					
+						
+					
+						
+					
+				</div>
+			
+				<div class="corner" id="E5J4">
+					
+						
+						
+							<div class="num-floor tie">
+								<img src="../resources/images/ic_tie.png">
+							</div>
+						
+					
+					<div class="corner-title">
+						
+							
+							
+								
+								<img src="../resources/images/hall/E5J4.png">
+							
+						
+					</div>
+					
+						
+					
+						
+							<dl class="menu">
+								<dt class="menu-title">컵푸드</dt>
+								<dd class="menu-detail">
+									
+										<span>고구마팩, 옥수수팩, 옥고감란, 사과, 넛츠피아세븐믹스아로니아, 오렌지, 허니듀메론, 요거치즈케익, 통단팥죽, 고시히카리쌀죽, 닭가슴살꼬꼬칩김스틱, 비건베리퀸쿠키, 블랙페퍼닭가슴살, 초당순두부, 두부면과그린빈샐러드, 쿠키앤크림, 아몬드봉봉, 체리쥬빌레, 뉴욕치즈케이크, 블랙쉐이크, 비건그린, 프로틴코코넛, 프로틴그레인</span>
+									
+									
+										<span class="menu-calorie">2433 kcal</span>
+									
+								</dd>
+							</dl>
+
+							<a herf="#">
+								<div class="menu-img" data-toggle="modal" data-target="#exampleModal01" data-whatever="http://samsungwelstory.com/data/manager/recipe/E5J4/20221027/s20221025160313.png">
+									
+										
+										
+											
+												
+												
+													<img src="http://samsungwelstory.com/data/manager/recipe/E5J4/20221027/s20221025160313.png" onerror="this.style.display='none';" />
+													<i class="ic-zoom"></i>
+												
+											
+										
+									
+								</div>
+							</a>
+
+							<div class="modal fade" id="exampleModal01" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-hidden="true">
+								<div class="modal-dialog">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h5 class="hidden">이미지 확대</h5>
+											<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+												<span aria-hidden="true">×</span>
+											</button>
+										</div>
+										<div class="modal-body">
+											<img id="menuImg" src = ""/>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						
+					
+						
+					
+						
+					
+						
+							<dl class="menu">
+								<dt class="menu-title">절편</dt>
+								<dd class="menu-detail">
+									
+									
+										<span class="menu-calorie">347 kcal</span>
+									
+								</dd>
+							</dl>
+
+							<a herf="#">
+								<div class="menu-img" data-toggle="modal" data-target="#exampleModal01" data-whatever="http://samsungwelstory.com/data/manager/recipe/E5J4/20221027/s20221004190213.png">
+									
+										
+										
+											
+												
+												
+													<img src="http://samsungwelstory.com/data/manager/recipe/E5J4/20221027/s20221004190213.png" onerror="this.style.display='none';" />
+													<i class="ic-zoom"></i>
+												
+											
+										
+									
+								</div>
+							</a>
+
+							<div class="modal fade" id="exampleModal01" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-hidden="true">
+								<div class="modal-dialog">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h5 class="hidden">이미지 확대</h5>
+											<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+												<span aria-hidden="true">×</span>
+											</button>
+										</div>
+										<div class="modal-body">
+											<img id="menuImg" src = ""/>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						
+					
+						
+							<dl class="menu">
+								<dt class="menu-title">김밥</dt>
+								<dd class="menu-detail">
+									
+										<span>트러플참치김밥, 웰김밥, 락교</span>
+									
+									
+								</dd>
+							</dl>
+
+							<a herf="#">
+								<div class="menu-img" data-toggle="modal" data-target="#exampleModal01" data-whatever="http://samsungwelstory.com/data/manager/recipe/E5J4/20221027/s20221025174835.png">
+									
+										
+										
+											
+												
+												
+													<img src="http://samsungwelstory.com/data/manager/recipe/E5J4/20221027/s20221025174835.png" onerror="this.style.display='none';" />
+													<i class="ic-zoom"></i>
+												
+											
+										
+									
+								</div>
+							</a>
+
+							<div class="modal fade" id="exampleModal01" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-hidden="true">
+								<div class="modal-dialog">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h5 class="hidden">이미지 확대</h5>
+											<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+												<span aria-hidden="true">×</span>
+											</button>
+										</div>
+										<div class="modal-body">
+											<img id="menuImg" src = ""/>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						
+					
+						
+							<dl class="menu">
+								<dt class="menu-title">멕시칸귀리밀</dt>
+								<dd class="menu-detail">
+									
+									
+										<span class="menu-calorie">490 kcal</span>
+									
+								</dd>
+							</dl>
+
+							<a herf="#">
+								<div class="menu-img" data-toggle="modal" data-target="#exampleModal01" data-whatever="http://samsungwelstory.com/data/manager/recipe/E5J4/20221027/s20221025182029.png">
+									
+										
+										
+											
+												
+												
+													<img src="http://samsungwelstory.com/data/manager/recipe/E5J4/20221027/s20221025182029.png" onerror="this.style.display='none';" />
+													<i class="ic-zoom"></i>
+												
+											
+										
+									
+								</div>
+							</a>
+
+							<div class="modal fade" id="exampleModal01" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-hidden="true">
+								<div class="modal-dialog">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h5 class="hidden">이미지 확대</h5>
+											<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+												<span aria-hidden="true">×</span>
+											</button>
+										</div>
+										<div class="modal-body">
+											<img id="menuImg" src = ""/>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						
+					
+						
+							<dl class="menu">
+								<dt class="menu-title">T/O 상시코너</dt>
+								<dd class="menu-detail">
+									
+									
+								</dd>
+							</dl>
+
+							<a herf="#">
+								<div class="menu-img" data-toggle="modal" data-target="#exampleModal01" data-whatever="http://samsungwelstory.com/data/manager/recipe/E5J4/20221027/s20221021183621.png">
+									
+										
+										
+											
+												
+												
+													<img src="http://samsungwelstory.com/data/manager/recipe/E5J4/20221027/s20221021183621.png" onerror="this.style.display='none';" />
+													<i class="ic-zoom"></i>
+												
+											
+										
+									
+								</div>
+							</a>
+
+							<div class="modal fade" id="exampleModal01" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-hidden="true">
+								<div class="modal-dialog">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h5 class="hidden">이미지 확대</h5>
+											<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+												<span aria-hidden="true">×</span>
+											</button>
+										</div>
+										<div class="modal-body">
+											<img id="menuImg" src = ""/>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						
+					
+						
+							<dl class="menu">
+								<dt class="menu-title">컵반</dt>
+								<dd class="menu-detail">
+									
+										<span>햇반컵반황태국밥, 햇반컵반순두부찌개, 햇반컵반미역국밥, 햇반컵반사골곰탕국밥, 햇반컵반중화마파두부덮밥, 햇반컵반직화볶음짜장덮밥</span>
+									
+									
+								</dd>
+							</dl>
+
+							<a herf="#">
+								<div class="menu-img" data-toggle="modal" data-target="#exampleModal01" data-whatever="http://samsungwelstory.com/data/manager/recipe/E5J4/20221027/s20221025160344.png">
+									
+										
+										
+											
+												
+												
+													<img src="http://samsungwelstory.com/data/manager/recipe/E5J4/20221027/s20221025160344.png" onerror="this.style.display='none';" />
+													<i class="ic-zoom"></i>
+												
+											
+										
+									
+								</div>
+							</a>
+
+							<div class="modal fade" id="exampleModal01" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-hidden="true">
+								<div class="modal-dialog">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h5 class="hidden">이미지 확대</h5>
+											<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+												<span aria-hidden="true">×</span>
+											</button>
+										</div>
+										<div class="modal-body">
+											<img id="menuImg" src = ""/>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						
+					
+						
+							<dl class="menu">
+								<dt class="menu-title">기타음료</dt>
+								<dd class="menu-detail">
+									
+										<span>컨디션CEO, 비건마시는식사카카오</span>
+									
+									
+										<span class="menu-calorie">90 kcal</span>
+									
+								</dd>
+							</dl>
+
+							<a herf="#">
+								<div class="menu-img" data-toggle="modal" data-target="#exampleModal01" data-whatever="http://samsungwelstory.com/data/manager/recipe/E5J4/20221027/s20221025160351.png">
+									
+										
+										
+											
+												
+												
+													<img src="http://samsungwelstory.com/data/manager/recipe/E5J4/20221027/s20221025160351.png" onerror="this.style.display='none';" />
+													<i class="ic-zoom"></i>
+												
+											
+										
+									
+								</div>
+							</a>
+
+							<div class="modal fade" id="exampleModal01" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-hidden="true">
+								<div class="modal-dialog">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h5 class="hidden">이미지 확대</h5>
+											<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+												<span aria-hidden="true">×</span>
+											</button>
+										</div>
+										<div class="modal-body">
+											<img id="menuImg" src = ""/>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						
+					
+						
+							<dl class="menu">
+								<dt class="menu-title">마이보글</dt>
+								<dd class="menu-detail">
+									
+										<span>라면, 라면, 라면, 라면, 라면, 라면, 슬라이스치즈, 계란,양파,당근,청양고추,대파</span>
+									
+									
+								</dd>
+							</dl>
+
+							<a herf="#">
+								<div class="menu-img" data-toggle="modal" data-target="#exampleModal01" data-whatever="http://samsungwelstory.com/data/manager/recipe/E5J4/20221027/s20221025160701.png">
+									
+										
+										
+											
+												
+												
+													<img src="http://samsungwelstory.com/data/manager/recipe/E5J4/20221027/s20221025160701.png" onerror="this.style.display='none';" />
+													<i class="ic-zoom"></i>
+												
+											
+										
+									
+								</div>
+							</a>
+
+							<div class="modal fade" id="exampleModal01" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-hidden="true">
+								<div class="modal-dialog">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h5 class="hidden">이미지 확대</h5>
+											<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+												<span aria-hidden="true">×</span>
+											</button>
+										</div>
+										<div class="modal-body">
+											<img id="menuImg" src = ""/>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						
+					
+						
+							<dl class="menu">
+								<dt class="menu-title">착즙주스</dt>
+								<dd class="menu-detail">
+									
+										<span>리얼그레인프로틴, 프레시그리너지, 베리마리굿, 뉴ABC주스</span>
+									
+									
+										<span class="menu-calorie">470 kcal</span>
+									
+								</dd>
+							</dl>
+
+							<a herf="#">
+								<div class="menu-img" data-toggle="modal" data-target="#exampleModal01" data-whatever="http://samsungwelstory.com/data/manager/recipe/E5J4/20221027/s20221025160737.png">
+									
+										
+										
+											
+												
+												
+													<img src="http://samsungwelstory.com/data/manager/recipe/E5J4/20221027/s20221025160737.png" onerror="this.style.display='none';" />
+													<i class="ic-zoom"></i>
+												
+											
+										
+									
+								</div>
+							</a>
+
+							<div class="modal fade" id="exampleModal01" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-hidden="true">
+								<div class="modal-dialog">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h5 class="hidden">이미지 확대</h5>
+											<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+												<span aria-hidden="true">×</span>
+											</button>
+										</div>
+										<div class="modal-body">
+											<img id="menuImg" src = ""/>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						
+					
+						
+							<dl class="menu">
+								<dt class="menu-title">베이커리</dt>
+								<dd class="menu-detail">
+									
+										<span>모닝롤빵, 참참만쥬, 초코카스테라롤, 순수우유후레쉬번, 소금빵, 넛츠베리깜빠뉴, 한입파이, 시나몬러스크</span>
+									
+									
+										<span class="menu-calorie">2725 kcal</span>
+									
+								</dd>
+							</dl>
+
+							<a herf="#">
+								<div class="menu-img" data-toggle="modal" data-target="#exampleModal01" data-whatever="http://samsungwelstory.com/data/manager/recipe/E5J4/20221027/s20221025160837.png">
+									
+										
+										
+											
+												
+												
+													<img src="http://samsungwelstory.com/data/manager/recipe/E5J4/20221027/s20221025160837.png" onerror="this.style.display='none';" />
+													<i class="ic-zoom"></i>
+												
+											
+										
+									
+								</div>
+							</a>
+
+							<div class="modal fade" id="exampleModal01" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-hidden="true">
+								<div class="modal-dialog">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h5 class="hidden">이미지 확대</h5>
+											<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+												<span aria-hidden="true">×</span>
+											</button>
+										</div>
+										<div class="modal-body">
+											<img id="menuImg" src = ""/>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						
+					
+						
+							<dl class="menu">
+								<dt class="menu-title">사이드</dt>
+								<dd class="menu-detail">
+									
+										<span>완숙계란, 촉촉계란, 구운계란, 점보유부불고기삼각김밥, 떡갈비마요삼각김밥, 점보참치마요삼각김밥, 사과, 바나나, 오렌지, 컵누들,우동맛, 신라면, 참깨라면, 비빔면, 육개장, 짜파게티, 크래미치즈볼, 포켓누룽지현미, 꼬마육포, 견과초코볼캐슈넛, 데르뜨젤리감귤, 그릭달지않은플레인, 요플레, 참크래커, 사과주스팩,아이키커, 본마망오렌지마말레이드잼, 구수한우거지된장국, 개운한미역된장국</span>
+									
+									
+								</dd>
+							</dl>
+
+							<a herf="#">
+								<div class="menu-img" data-toggle="modal" data-target="#exampleModal01" data-whatever="http://samsungwelstory.com/data/manager/recipe/E5J4/20221027/s20221025160945.png">
+									
+										
+										
+											
+												
+												
+													<img src="http://samsungwelstory.com/data/manager/recipe/E5J4/20221027/s20221025160945.png" onerror="this.style.display='none';" />
+													<i class="ic-zoom"></i>
+												
+											
+										
+									
+								</div>
+							</a>
+
+							<div class="modal fade" id="exampleModal01" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-hidden="true">
+								<div class="modal-dialog">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h5 class="hidden">이미지 확대</h5>
+											<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+												<span aria-hidden="true">×</span>
+											</button>
+										</div>
+										<div class="modal-body">
+											<img id="menuImg" src = ""/>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						
+					
+						
+							<dl class="menu">
+								<dt class="menu-title">샌드위치</dt>
+								<dd class="menu-detail">
+									
+										<span>후레쉬에그햄샌드위치, 계란빵</span>
+									
+									
+								</dd>
+							</dl>
+
+							<a herf="#">
+								<div class="menu-img" data-toggle="modal" data-target="#exampleModal01" data-whatever="http://samsungwelstory.com/data/manager/recipe/E5J4/20221027/s20221025162834.png">
+									
+										
+										
+											
+												
+												
+													<img src="http://samsungwelstory.com/data/manager/recipe/E5J4/20221027/s20221025162834.png" onerror="this.style.display='none';" />
+													<i class="ic-zoom"></i>
+												
+											
+										
+									
+								</div>
+							</a>
+
+							<div class="modal fade" id="exampleModal01" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-hidden="true">
+								<div class="modal-dialog">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h5 class="hidden">이미지 확대</h5>
+											<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+												<span aria-hidden="true">×</span>
+											</button>
+										</div>
+										<div class="modal-body">
+											<img id="menuImg" src = ""/>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						
+					
+						
+							<dl class="menu">
+								<dt class="menu-title">샐러드</dt>
+								<dd class="menu-detail">
+									
+										<span>멕시칸풀드포크 타코샐러드, 비건찹스테이크, 비건-견과류, 오보-메추리알</span>
+									
+									
+								</dd>
+							</dl>
+
+							<a herf="#">
+								<div class="menu-img" data-toggle="modal" data-target="#exampleModal01" data-whatever="http://samsungwelstory.com/data/manager/recipe/E5J4/20221027/s20221025174605.png">
+									
+										
+										
+											
+												
+												
+													<img src="http://samsungwelstory.com/data/manager/recipe/E5J4/20221027/s20221025174605.png" onerror="this.style.display='none';" />
+													<i class="ic-zoom"></i>
+												
+											
+										
+									
+								</div>
+							</a>
+
+							<div class="modal fade" id="exampleModal01" tabindex="-1" aria-labelledby="exampleModalCenterTitle" style="display: none;" aria-hidden="true">
+								<div class="modal-dialog">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h5 class="hidden">이미지 확대</h5>
+											<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+												<span aria-hidden="true">×</span>
+											</button>
+										</div>
+										<div class="modal-body">
+											<img id="menuImg" src = ""/>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						
+					
+				</div>
+			
+		</div>
+	
+	
+
+
+ </section>
+	<!-- //Content Wrap -->
+
+	<!-- 	snackbar setting -->
+	<div class="mo-ui-snackbar" id=""
+		style="position: fixed; bottom: 0; width: 100%; box-sizing: border-box; background-color: rgba(77, 77, 77, 0.9); padding: 15px; display: none; z-index: 100">
+		<p style="margin: 0; font-size: 16px; color: #fff;">‘뒤로’ 버튼을 한 번 더
+			누르시면 종료됩니다.</p>
+	</div>
+	<!-- TOP -->
+	<button class="mo-btn-top" data-role="none">
+		<span></span>
+	</button>
+	<!-- //TOP -->
+</body>
