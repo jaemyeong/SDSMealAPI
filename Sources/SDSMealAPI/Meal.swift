@@ -25,3 +25,5 @@ extension Meal: Equatable {}
 extension Meal: Hashable {}
 
 extension Meal: Codable {}
+
+extension Meal: CaseIterable {}
