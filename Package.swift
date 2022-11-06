@@ -18,7 +18,7 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/jaemyeong/ErrorKit.git", .upToNextMajor(from: "0.1.8")),
+        .package(url: "https://github.com/jaemyeong/ErrorKit.git", .upToNextMajor(from: "0.1.9")),
         .package(url: "https://github.com/scinfu/SwiftSoup.git", .upToNextMajor(from: "2.4.3")),
     ],
     targets: [
