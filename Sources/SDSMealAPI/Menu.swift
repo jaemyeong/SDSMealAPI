@@ -23,7 +23,17 @@ public struct Menu {
 extension Menu {
     
     public init(element: Element) throws {
-        guard let imageURL = try (element.nextElementSibling()?.select("img").first()?.attr("src")).flatMap(URL.init(string:)) else {
+        guard let imageURLComponents = try (element.nextElementSibling()?.select("img").first()?.attr("src")).flatMap(URLComponents.init(string:)) else {
+            throw NilError()
+        }
+        
+        guard let baseURL = URL(string: "http://sdsfoodmenu.co.kr:9106/foodcourt") else {
+            throw InstantiateError()
+        }
+        
+        let hasHost = imageURLComponents.host != nil
+        
+        guard let imageURL = hasHost ? imageURLComponents.url : imageURLComponents.url(relativeTo: baseURL) else {
             throw NilError()
         }
         
