@@ -9,7 +9,7 @@
 ### Requirements
 
 - macOS Ventura 13.0
-- Xcode 14.0.1
+- Xcode 14.1
 - iOS 13.0
 
 ### Installation
@@ -17,7 +17,7 @@
 #### Swift Package Manager
 
 ```swift
-.package(url: "https://github.com/jaemyeong/SDSMealAPI.git", .upToNextMajor(from: "0.1.7"))
+.package(url: "https://github.com/jaemyeong/SDSMealAPI.git", .upToNextMajor(from: "0.1.8"))
 ```
 
 ### Usage
